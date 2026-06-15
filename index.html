@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borobhairion Research Paper Analysis</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap');
+
+        :root {
+            --bg: #f8f8fc;
+            --surface: #ffffff;
+            --surface-rgb: 255, 255, 255;
+            --text: #1a1a2e;
+            --text-muted: #666;
+            --border: #e0e0ec;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.2);
+            --success: #10b981;
+            --font-display: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f0f13;
+            --surface: #1a1a24;
+            --surface-rgb: 26, 26, 36;
+            --text: #e8e8f0;
+            --text-muted: #a0a0b0;
+            --border: #2a2a3a;
+            --accent: #818cf8;
+            --accent-glow: rgba(129, 140, 248, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color var(--transition), color var(--transition);
+        }
+
+        /* Hero Page */
+        #hero-view {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-color: #0a0a0f;
+            color: white;
+            position: relative;
+            z-index: 10;
+            transition: opacity 0.8s ease;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        #hero-view::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15), transparent 70%);
+            animation: pulse-bg 10s infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes pulse-bg {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .hero-headline {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 10vw, 5rem);
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            color: #a0a0b0;
+            max-width: 600px;
+            margin-bottom: 3rem;
+        }
+
+        .feature-row {
+            display: flex;
+            gap: 3rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        .feature-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .privacy-line {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 1.25rem 3rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.6);
+            background-color: #4f46e5;
+        }
+
+        .hero-footer {
+            position: absolute;
+            bottom: 2rem;
+            font-size: 0.8rem;
+            color: #444;
+        }
+
+        /* Main Form View */
+        #form-view {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 70px;
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background-color: rgba(var(--surface-rgb, 255, 255, 255), 0.8);
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .progress-bar-container {
+            flex: 1;
+            max-width: 400px;
+            height: 6px;
+            background: var(--border);
+            border-radius: 10px;
+            margin: 0 2rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--accent);
+            transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .icon-btn {
+            background: none;
+            border: 1px solid var(--border);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text);
+            transition: var(--transition);
+        }
+
+        .icon-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .scholar-btn {
+            padding: 0 1rem;
+            width: auto;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Form Sections */
+        main {
+            max-width: 850px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .section-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: 4px solid var(--accent);
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease, border-left 0.3s ease;
+        }
+
+        .section-card.reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-card:focus-within {
+            border-left: 4px solid var(--accent);
+            box-shadow: -10px 0 20px var(--accent-glow), 0 10px 20px rgba(0,0,0,0.05);
+        }
+
+        .section-title-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+        }
+
+        .section-card h2 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+        }
+
+        .completion-mark {
+            color: var(--success);
+            font-size: 1.5rem;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.3s, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .completion-mark.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .question-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .question-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+            color: var(--text);
+        }
+
+        textarea, select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--text);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        textarea:focus, select:focus, input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .textarea-wrapper {
+            position: relative;
+        }
+
+        .typing-indicator {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            display: flex;
+            gap: 3px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .typing-indicator.active {
+            opacity: 1;
+        }
+
+        .dot {
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: bounce 0.6s infinite alternate;
+        }
+
+        .dot:nth-child(2) { animation-delay: 0.1s; }
+        .dot:nth-child(3) { animation-delay: 0.2s; }
+
+        @keyframes bounce {
+            to { transform: translateY(-4px); }
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            user-select: none;
+        }
+
+        .option-label:hover {
+            border-color: var(--accent);
+        }
+
+        .option-label input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .option-label.pulse {
+            animation: scale-pulse 0.2s ease;
+        }
+
+        @keyframes scale-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .option-label input:checked + span {
+            font-weight: 600;
+        }
+
+        /* Fallback for browsers without :has() */
+        .option-label:has(input:checked), .option-label.checked {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        /* PDF Button Container */
+        .pdf-action-container {
+            text-align: center;
+            margin: 4rem 0;
+        }
+
+        .shimmer-btn {
+            position: relative;
+            background: var(--accent);
+            color: white;
+            padding: 1.5rem 4rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 0 10px 30px var(--accent-glow);
+            transition: transform 0.3s;
+        }
+
+        .shimmer-btn:hover {
+            transform: translateY(-5px);
+        }
+
+        .shimmer-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -100%;
+            width: 50%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            transition: 0.6s;
+        }
+
+        .shimmer-btn:hover::after {
+            left: 150%;
+        }
+
+        footer {
+            padding: 4rem 0;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        footer p {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .privacy-disclaimer {
+            font-size: 0.75rem;
+            max-width: 400px;
+            margin: 0 auto;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .hero-headline { font-size: 3rem; }
+            .feature-row { gap: 1.5rem; }
+            .section-card { padding: 1.5rem; }
+            .options-grid { grid-template-columns: 1fr; }
+            .header-actions .scholar-btn span { display: none; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+<div id="hero-view">
+    <h1 class="hero-headline">Research Paper Analysis</h1>
+    <p class="hero-subtitle">Structure your research thinking. Evaluate papers deeply. Generate a professional report in seconds.</p>
+    
+    <div class="feature-row">
+        <div class="feature-item">
+            <span class="feature-icon">📁</span>
+            <span class="feature-label">20 Analysis Sections</span>
+        </div>
+        <div class="feature-item">
+            <span class="feature-icon">📄</span>
+            <span class="feature-label">PDF Export</span>
+        </div>
+        <div class="feature-item">
+            <span class="feature-icon">🔒</span>
+            <span class="feature-label">100% Private</span>
+        </div>
+    </div>
+
+    <p class="privacy-line">Your data never leaves your device. No servers. No tracking. No accounts.</p>
+    
+    <button class="cta-button" onclick="startCreating()">Let's Create →</button>
+    
+    <div class="hero-footer">© 2026 Borobhairion. All rights reserved.</div>
+</div>
+
+<div id="form-view">
+    <header>
+        <div class="logo">RPA</div>
+        <div class="progress-bar-container">
+            <div id="progress-bar"></div>
+        </div>
+        <div class="header-actions">
+            <a href="https://scholar.google.com" target="_blank" class="icon-btn scholar-btn">
+                <span>Google Scholar</span> ↗
+            </a>
+            <button class="icon-btn" id="theme-toggle" title="Toggle Theme">
+                <span id="theme-icon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <main id="form-container">
+        <!-- Section 1 -->
+        <section class="section-card" data-section="1">
+            <div class="section-title-wrapper">
+                <h2>Section 1 — Paper Identification</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>Paper link / DOI / Paper ID</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s1_q1"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Title</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s1_q2"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Authors</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s1_q3"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Publication year</label>
+                <input type="number" name="s1_q4" placeholder="e.g. 2024">
+            </div>
+            <div class="question-group">
+                <label>Conference / Journal</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s1_q5"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Is it peer-reviewed?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s1_q6" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s1_q6" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s1_q6" value="Unknown"> <span>Unknown</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Citation count</label>
+                <input type="number" name="s1_q7" min="0">
+            </div>
+            <div class="question-group">
+                <label>Is this a preprint or formally published?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s1_q8" value="Preprint"> <span>Preprint</span></label>
+                    <label class="option-label"><input type="radio" name="s1_q8" value="Formally Published"> <span>Formally Published</span></label>
+                    <label class="option-label"><input type="radio" name="s1_q8" value="Unknown"> <span>Unknown</span></label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="section-card" data-section="2">
+            <div class="section-title-wrapper">
+                <h2>Section 2 — Research Area Classification</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>Research domain</label>
+                <select name="s2_q1">
+                    <option value="">-- Select --</option>
+                    <option value="AI / Machine Learning">AI / Machine Learning</option>
+                    <option value="Deep Learning">Deep Learning</option>
+                    <option value="Computer Vision">Computer Vision</option>
+                    <option value="NLP">NLP</option>
+                    <option value="Embedded Systems">Embedded Systems</option>
+                    <option value="IoT">IoT</option>
+                    <option value="Robotics">Robotics</option>
+                    <option value="Cybersecurity">Cybersecurity</option>
+                    <option value="Medical">Medical</option>
+                    <option value="Education">Education</option>
+                    <option value="Environmental">Environmental</option>
+                    <option value="Bioinformatics">Bioinformatics</option>
+                    <option value="Finance / FinTech">Finance / FinTech</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="question-group">
+                <label>Is this multidisciplinary research?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s2_q2" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s2_q2" value="No"> <span>No</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Sub-domain or specific topic</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s2_q3"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="section-card" data-section="3">
+            <div class="section-title-wrapper">
+                <h2>Section 3 — Problem Understanding</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>What problem is the paper trying to solve?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s3_q1"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Is the problem clearly defined?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s3_q2" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s3_q2" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s3_q2" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Is the problem real-world or theoretical?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s3_q3" value="Real-world"> <span>Real-world</span></label>
+                    <label class="option-label"><input type="radio" name="s3_q3" value="Theoretical"> <span>Theoretical</span></label>
+                    <label class="option-label"><input type="radio" name="s3_q3" value="Both"> <span>Both</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Who experiences this problem?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s3_q4"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Why does this problem matter?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s3_q5"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>What is the scale of the problem?</label>
+                <select name="s3_q6">
+                    <option value="">-- Select --</option>
+                    <option value="Local">Local</option>
+                    <option value="National">National</option>
+                    <option value="Global">Global</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="section-card" data-section="4">
+            <div class="section-title-wrapper">
+                <h2>Section 4 — Research Gap Analysis</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>What is the claimed research gap?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s4_q1"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Type of gap (select all that apply)</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="checkbox" name="s4_q2" value="Missing knowledge"> <span>Missing knowledge</span></label>
+                    <label class="option-label"><input type="checkbox" name="s4_q2" value="Missing method"> <span>Missing method</span></label>
+                    <label class="option-label"><input type="checkbox" name="s4_q2" value="Poor accuracy"> <span>Poor accuracy</span></label>
+                    <label class="option-label"><input type="checkbox" name="s4_q2" value="High cost"> <span>High cost</span></label>
+                    <label class="option-label"><input type="checkbox" name="s4_q2" value="Lack of scalability"> <span>Lack of scalability</span></label>
+                    <label class="option-label"><input type="checkbox" name="s4_q2" value="Lack of dataset"> <span>Lack of dataset</span></label>
+                    <label class="option-label"><input type="checkbox" name="s4_q2" value="Lack of real-world testing"> <span>Lack of real-world testing</span></label>
+                    <label class="option-label"><input type="checkbox" name="s4_q2" value="Contradictory results"> <span>Contradictory results</span></label>
+                    <label class="option-label"><input type="checkbox" name="s4_q2" value="Lack of explainability"> <span>Lack of explainability</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Is this gap actually still open?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s4_q3" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s4_q3" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s4_q3" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Has another paper already solved it?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s4_q4" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s4_q4" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s4_q4" value="Not Sure"> <span>Not Sure</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>If solved — how was it solved?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s4_q5"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>If solved — what limitations remain?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s4_q6"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Is the gap supported by citations or just claimed?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s4_q7" value="Supported by citations"> <span>Supported by citations</span></label>
+                    <label class="option-label"><input type="radio" name="s4_q7" value="Just claimed"> <span>Just claimed</span></label>
+                    <label class="option-label"><input type="radio" name="s4_q7" value="Partially supported"> <span>Partially supported</span></label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5 -->
+        <section class="section-card" data-section="5">
+            <div class="section-title-wrapper">
+                <h2>Section 5 — Novelty / Originality</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>What is new in this research?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s5_q1"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Type of novelty (select all that apply)</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="checkbox" name="s5_q2" value="New algorithm"> <span>New algorithm</span></label>
+                    <label class="option-label"><input type="checkbox" name="s5_q2" value="New dataset"> <span>New dataset</span></label>
+                    <label class="option-label"><input type="checkbox" name="s5_q2" value="New architecture"> <span>New architecture</span></label>
+                    <label class="option-label"><input type="checkbox" name="s5_q2" value="New application"> <span>New application</span></label>
+                    <label class="option-label"><input type="checkbox" name="s5_q2" value="New combination"> <span>New combination</span></label>
+                    <label class="option-label"><input type="checkbox" name="s5_q2" value="New theory"> <span>New theory</span></label>
+                    <label class="option-label"><input type="checkbox" name="s5_q2" value="New framework"> <span>New framework</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Novelty score</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s5_q3" value="Low"> <span>Low</span></label>
+                    <label class="option-label"><input type="radio" name="s5_q3" value="Medium"> <span>Medium</span></label>
+                    <label class="option-label"><input type="radio" name="s5_q3" value="High"> <span>High</span></label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6 -->
+        <section class="section-card" data-section="6">
+            <div class="section-title-wrapper">
+                <h2>Section 6 — Research Question / Hypothesis</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>What is the main research question?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s6_q1"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Is it specific?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s6_q2" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s6_q2" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s6_q2" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Is it measurable?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s6_q3" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s6_q3" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s6_q3" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Can it be tested?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s6_q4" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s6_q4" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s6_q4" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Does the paper answer its own research question by the conclusion?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s6_q5" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s6_q5" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s6_q5" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7 -->
+        <section class="section-card" data-section="7">
+            <div class="section-title-wrapper">
+                <h2>Section 7 — Objective Evaluation</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>Are the objectives clear?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s7_q1" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s7_q1" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s7_q1" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>What are the main objectives?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s7_q2"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Are the objectives achieved?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s7_q3" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s7_q3" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s7_q3" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Are the objectives measurable?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s7_q4" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s7_q4" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s7_q4" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Is there a mismatch between stated objectives and actual results?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s7_q5" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s7_q5" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s7_q5" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8 -->
+        <section class="section-card" data-section="8">
+            <div class="section-title-wrapper">
+                <h2>Section 8 — Methodology Analysis</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>How is the solution implemented?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s8_q1"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Methods used (select all that apply)</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="checkbox" name="s8_q2" value="Machine learning model"> <span>Machine learning</span></label>
+                    <label class="option-label"><input type="checkbox" name="s8_q2" value="Statistical method"> <span>Statistical method</span></label>
+                    <label class="option-label"><input type="checkbox" name="s8_q2" value="Experiment"> <span>Experiment</span></label>
+                    <label class="option-label"><input type="checkbox" name="s8_q2" value="Survey"> <span>Survey</span></label>
+                    <label class="option-label"><input type="checkbox" name="s8_q2" value="Simulation"> <span>Simulation</span></label>
+                    <label class="option-label"><input type="checkbox" name="s8_q2" value="Prototype"> <span>Prototype</span></label>
+                    <label class="option-label"><input type="checkbox" name="s8_q2" value="Systematic literature review"> <span>SLR</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Dataset used</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s8_q3"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Dataset size</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s8_q4"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Data source</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s8_q5"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Data quality</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s8_q6" value="High"> <span>High</span></label>
+                    <label class="option-label"><input type="radio" name="s8_q6" value="Medium"> <span>Medium</span></label>
+                    <label class="option-label"><input type="radio" name="s8_q6" value="Low"> <span>Low</span></label>
+                    <label class="option-label"><input type="radio" name="s8_q6" value="Not mentioned"> <span>Not mentioned</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Training / testing split</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s8_q7"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Hardware requirements</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s8_q8"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Software / tools used</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s8_q9"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Validation strategy</label>
+                <select name="s8_q10">
+                    <option value="">-- Select --</option>
+                    <option value="Cross-validation">Cross-validation</option>
+                    <option value="Hold-out">Hold-out</option>
+                    <option value="Both">Both</option>
+                    <option value="None">None</option>
+                    <option value="Not mentioned">Not mentioned</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Section 9 -->
+        <section class="section-card" data-section="9">
+            <div class="section-title-wrapper">
+                <h2>Section 9 — Feasibility Analysis</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>Can it be completed within available time?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s9_q1" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q1" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q1" value="Uncertain"> <span>Uncertain</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Is enough data available?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s9_q2" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q2" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q2" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Hardware cost</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s9_q3" value="Low"> <span>Low</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q3" value="Medium"> <span>Medium</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q3" value="High"> <span>High</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q3" value="Not mentioned"> <span>Not mentioned</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Computing cost</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s9_q4" value="Low"> <span>Low</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q4" value="Medium"> <span>Medium</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q4" value="High"> <span>High</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q4" value="Not mentioned"> <span>Not mentioned</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Resources required</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s9_q5"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Are required skills available?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s9_q6" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q6" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q6" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Can it work outside a research environment?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s9_q7" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q7" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q7" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Does it require specialized infrastructure?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s9_q8" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q8" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s9_q8" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 10 -->
+        <section class="section-card" data-section="10">
+            <div class="section-title-wrapper">
+                <h2>Section 10 — Benefit Analysis</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>Who benefits? (select all that apply)</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="checkbox" name="s10_q1" value="Researchers"> <span>Researchers</span></label>
+                    <label class="option-label"><input type="checkbox" name="s10_q1" value="Industry"> <span>Industry</span></label>
+                    <label class="option-label"><input type="checkbox" name="s10_q1" value="Government"> <span>Government</span></label>
+                    <label class="option-label"><input type="checkbox" name="s10_q1" value="Students"> <span>Students</span></label>
+                    <label class="option-label"><input type="checkbox" name="s10_q1" value="Doctors"> <span>Doctors</span></label>
+                    <label class="option-label"><input type="checkbox" name="s10_q1" value="Patients"> <span>Patients</span></label>
+                    <label class="option-label"><input type="checkbox" name="s10_q1" value="Consumers"> <span>Consumers</span></label>
+                    <label class="option-label"><input type="checkbox" name="s10_q1" value="Environment"> <span>Environment</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>What is the benefit?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s10_q2"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Cost reduction?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s10_q3" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s10_q3" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s10_q3" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Time saving?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s10_q4" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s10_q4" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s10_q4" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Accuracy improvement?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s10_q5" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s10_q5" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s10_q5" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Automation?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s10_q6" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s10_q6" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s10_q6" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Safety improvement?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s10_q7" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s10_q7" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s10_q7" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Is the benefit incremental or transformative?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s10_q8" value="Incremental"> <span>Incremental</span></label>
+                    <label class="option-label"><input type="radio" name="s10_q8" value="Transformative"> <span>Transformative</span></label>
+                    <label class="option-label"><input type="radio" name="s10_q8" value="Both"> <span>Both</span></label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 11 -->
+        <section class="section-card" data-section="11">
+            <div class="section-title-wrapper">
+                <h2>Section 11 — Expected Contribution</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>What does this paper contribute?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s11_q1"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Type of contribution (select all that apply)</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="checkbox" name="s11_q2" value="New knowledge"> <span>New knowledge</span></label>
+                    <label class="option-label"><input type="checkbox" name="s11_q2" value="New technology"> <span>New technology</span></label>
+                    <label class="option-label"><input type="checkbox" name="s11_q2" value="Better performance"> <span>Better performance</span></label>
+                    <label class="option-label"><input type="checkbox" name="s11_q2" value="Better understanding"> <span>Better understanding</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Does it contribute openly to the community?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s11_q3" value="Yes (open code/data)"> <span>Yes (open)</span></label>
+                    <label class="option-label"><input type="radio" name="s11_q3" value="Partially"> <span>Partially</span></label>
+                    <label class="option-label"><input type="radio" name="s11_q3" value="No"> <span>No</span></label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 12 -->
+        <section class="section-card" data-section="12">
+            <div class="section-title-wrapper">
+                <h2>Section 12 — Result Analysis</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>Are the results convincing?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s12_q1" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s12_q1" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s12_q1" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Metrics used (select all that apply)</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="checkbox" name="s12_q2" value="Accuracy"> <span>Accuracy</span></label>
+                    <label class="option-label"><input type="checkbox" name="s12_q2" value="Precision"> <span>Precision</span></label>
+                    <label class="option-label"><input type="checkbox" name="s12_q2" value="Recall"> <span>Recall</span></label>
+                    <label class="option-label"><input type="checkbox" name="s12_q2" value="F1 score"> <span>F1 score</span></label>
+                    <label class="option-label"><input type="checkbox" name="s12_q2" value="RMSE"> <span>RMSE</span></label>
+                    <label class="option-label"><input type="checkbox" name="s12_q2" value="Speed"> <span>Speed</span></label>
+                    <label class="option-label"><input type="checkbox" name="s12_q2" value="AUC-ROC"> <span>AUC-ROC</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Are comparisons fair?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s12_q3" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s12_q3" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s12_q3" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Compared with strong baselines?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s12_q4" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s12_q4" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s12_q4" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Any statistical validation?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s12_q5" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s12_q5" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s12_q5" value="Not mentioned"> <span>Not mentioned</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Are results averaged over multiple runs with variance reported?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s12_q6" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s12_q6" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s12_q6" value="Not mentioned"> <span>Not mentioned</span></label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 13 -->
+        <section class="section-card" data-section="13">
+            <div class="section-title-wrapper">
+                <h2>Section 13 — Limitations</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>What limitations does the paper have?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s13_q1"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Types of limitation (select all that apply)</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="checkbox" name="s13_q2" value="Dataset limitation"> <span>Dataset limitation</span></label>
+                    <label class="option-label"><input type="checkbox" name="s13_q2" value="Small sample size"> <span>Small sample</span></label>
+                    <label class="option-label"><input type="checkbox" name="s13_q2" value="High computation"> <span>High computation</span></label>
+                    <label class="option-label"><input type="checkbox" name="s13_q2" value="Not tested in real world"> <span>Not real-world</span></label>
+                    <label class="option-label"><input type="checkbox" name="s13_q2" value="Bias"> <span>Bias</span></label>
+                    <label class="option-label"><input type="checkbox" name="s13_q2" value="Generalization problem"> <span>Generalization</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Could any limitation invalidate the main claim?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s13_q3" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s13_q3" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s13_q3" value="Possibly"> <span>Possibly</span></label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 14 -->
+        <section class="section-card" data-section="14">
+            <div class="section-title-wrapper">
+                <h2>Section 14 — Future Research Opportunity</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>What can be improved?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s14_q1"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Can we extend this work?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s14_q2" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s14_q2" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s14_q2" value="Possibly"> <span>Possibly</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Can we apply it somewhere else?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s14_q3" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s14_q3" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s14_q3" value="Possibly"> <span>Possibly</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Can we make it cheaper or faster?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s14_q4" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s14_q4" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s14_q4" value="Possibly"> <span>Possibly</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Can we solve its limitation?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s14_q5" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s14_q5" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s14_q5" value="Possibly"> <span>Possibly</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Is there an obvious next experiment the authors didn't run?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s14_q6"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 15 -->
+        <section class="section-card" data-section="15">
+            <div class="section-title-wrapper">
+                <h2>Section 15 — Final Research Idea Evaluation</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>Research potential</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s15_q1" value="Low"> <span>Low</span></label>
+                    <label class="option-label"><input type="radio" name="s15_q1" value="Medium"> <span>Medium</span></label>
+                    <label class="option-label"><input type="radio" name="s15_q1" value="High"> <span>High</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Reason</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s15_q2"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Possible new research direction</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s15_q3"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Would this gap make a strong thesis topic?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s15_q4" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s15_q4" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s15_q4" value="Possibly"> <span>Possibly</span></label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 16 -->
+        <section class="section-card" data-section="16">
+            <div class="section-title-wrapper">
+                <h2>Section 16 — Reproducibility</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>Is the code available?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s16_q1" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s16_q1" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s16_q1" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Are datasets available?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s16_q2" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s16_q2" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s16_q2" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Can another researcher reproduce it?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s16_q3" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s16_q3" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s16_q3" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Are library / framework versions reported?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s16_q4" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s16_q4" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s16_q4" value="Not mentioned"> <span>Not mentioned</span></label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 17 -->
+        <section class="section-card" data-section="17">
+            <div class="section-title-wrapper">
+                <h2>Section 17 — Ethics</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>Does it involve privacy concerns?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s17_q1" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s17_q1" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s17_q1" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Is there potential bias?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s17_q2" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s17_q2" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s17_q2" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Are there safety issues?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s17_q3" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s17_q3" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s17_q3" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Could the method be misused?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s17_q4" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s17_q4" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s17_q4" value="Possibly"> <span>Possibly</span></label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 18 -->
+        <section class="section-card" data-section="18">
+            <div class="section-title-wrapper">
+                <h2>Section 18 — Comparison</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>Why is this method better than existing ones?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s18_q1"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Are the baselines recent and relevant?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s18_q2" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s18_q2" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s18_q2" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Is the performance gain statistically significant or marginal?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s18_q3" value="Significant"> <span>Significant</span></label>
+                    <label class="option-label"><input type="radio" name="s18_q3" value="Marginal"> <span>Marginal</span></label>
+                    <label class="option-label"><input type="radio" name="s18_q3" value="Not tested"> <span>Not tested</span></label>
+                    <label class="option-label"><input type="radio" name="s18_q3" value="Not mentioned"> <span>Not mentioned</span></label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 19 -->
+        <section class="section-card" data-section="19">
+            <div class="section-title-wrapper">
+                <h2>Section 19 — Failure Cases</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>When does the solution fail?</label>
+                <div class="textarea-wrapper">
+                    <textarea name="s19_q1"></textarea>
+                    <div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Is there a pattern to the failures?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s19_q2" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s19_q2" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s19_q2" value="Not analyzed"> <span>Not analyzed</span></label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 20 -->
+        <section class="section-card" data-section="20">
+            <div class="section-title-wrapper">
+                <h2>Section 20 — Real-world Deployment</h2>
+                <span class="completion-mark">✓</span>
+            </div>
+            <div class="question-group">
+                <label>Laboratory only or usable in reality?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s20_q1" value="Laboratory only"> <span>Laboratory</span></label>
+                    <label class="option-label"><input type="radio" name="s20_q1" value="Usable in reality"> <span>Real-world</span></label>
+                    <label class="option-label"><input type="radio" name="s20_q1" value="Partially"> <span>Partially</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Has it been tested with real end-users?</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="s20_q2" value="Yes"> <span>Yes</span></label>
+                    <label class="option-label"><input type="radio" name="s20_q2" value="No"> <span>No</span></label>
+                    <label class="option-label"><input type="radio" name="s20_q2" value="Not mentioned"> <span>Not mentioned</span></label>
+                </div>
+            </div>
+            <div class="question-group">
+                <label>Regulatory considerations (select all that apply)</label>
+                <div class="options-grid">
+                    <label class="option-label"><input type="checkbox" name="s20_q3" value="FDA"> <span>FDA</span></label>
+                    <label class="option-label"><input type="checkbox" name="s20_q3" value="GDPR"> <span>GDPR</span></label>
+                    <label class="option-label"><input type="checkbox" name="s20_q3" value="HIPAA"> <span>HIPAA</span></label>
+                    <label class="option-label"><input type="checkbox" name="s20_q3" value="None mentioned"> <span>None</span></label>
+                </div>
+            </div>
+        </section>
+
+        <div class="pdf-action-container">
+            <button id="generate-pdf" class="shimmer-btn">Generate PDF Report</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Borobhairion. All rights reserved.</p>
+        <p class="privacy-disclaimer">All analysis is performed locally in your browser. No data is transmitted or stored externally.</p>
+    </footer>
+</div>
+
+<script>
+    // Theme Management
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const body = document.body;
+
+    function setTheme(theme) {
+        body.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        themeIcon.innerText = theme === 'dark' ? '☀️' : '🌙';
+    }
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = body.getAttribute('data-theme');
+        setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    });
+
+    // View Management
+    function startCreating() {
+        const hero = document.getElementById('hero-view');
+        const form = document.getElementById('form-view');
+        
+        hero.style.opacity = '0';
+        setTimeout(() => {
+            hero.style.display = 'none';
+            form.style.display = 'block';
+            setTimeout(() => {
+                form.style.opacity = '1';
+                initReveal();
+            }, 50);
+        }, 800);
+    }
+
+    // Scroll Reveal and Staggered Load
+    function initReveal() {
+        const observerOptions = { threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal');
+                }
+            });
+        }, observerOptions);
+
+        const cards = document.querySelectorAll('.section-card');
+        cards.forEach((card) => {
+            observer.observe(card);
+        });
+    }
+
+    // Form Logic & Micro-animations
+    const formContainer = document.getElementById('form-container');
+    const progressBar = document.getElementById('progress-bar');
+
+    formContainer.addEventListener('input', (e) => {
+        const section = e.target.closest('.section-card');
+        if (section) {
+            updateSectionStatus(section);
+        }
+        updateGlobalProgress();
+
+        // Radio/Checkbox pulse
+        if (e.target.type === 'radio' || e.target.type === 'checkbox') {
+            const label = e.target.closest('.option-label');
+            if (label) {
+                label.classList.remove('pulse');
+                void label.offsetWidth; // trigger reflow
+                label.classList.add('pulse');
+            }
+            // Fallback checked class for browsers without :has()
+            if (e.target.type === 'radio') {
+                const name = e.target.name;
+                document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+                    const l = inp.closest('.option-label');
+                    if (l) l.classList.toggle('checked', inp.checked);
+                });
+            } else {
+                if (label) label.classList.toggle('checked', e.target.checked);
+            }
+        }
+    });
+
+    // Typing Indicators
+    formContainer.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'TEXTAREA') {
+            const wrapper = e.target.closest('.textarea-wrapper');
+            const indicator = wrapper.querySelector('.typing-indicator');
+            indicator.classList.add('active');
+            
+            clearTimeout(e.target._typingTimer);
+            e.target._typingTimer = setTimeout(() => {
+                indicator.classList.remove('active');
+            }, 1000);
+        }
+    });
+
+    function updateSectionStatus(section) {
+        const inputs = section.querySelectorAll('input, textarea, select');
+        let isFilled = false;
+        inputs.forEach(input => {
+            if ((input.type === 'radio' || input.type === 'checkbox') && input.checked) isFilled = true;
+            else if (input.value.trim() !== '' && input.type !== 'radio' && input.type !== 'checkbox') isFilled = true;
+        });
+
+        const mark = section.querySelector('.completion-mark');
+        if (isFilled) mark.classList.add('visible');
+        else mark.classList.remove('visible');
+    }
+
+    function updateGlobalProgress() {
+        const sections = document.querySelectorAll('.section-card');
+        let filledCount = 0;
+        sections.forEach(s => {
+            if (s.querySelector('.completion-mark').classList.contains('visible')) filledCount++;
+        });
+        const percentage = (filledCount / sections.length) * 100;
+        progressBar.style.width = percentage + '%';
+    }
+
+    // PDF Generation
+    document.getElementById('generate-pdf').addEventListener('click', async () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 20;
+        const year = new Date().getFullYear();
+
+        // HELPER: Add Footer
+        const addFooter = (d, pNum, total) => {
+            d.setFontSize(8);
+            d.setTextColor(150, 150, 150);
+            d.text(`Page ${pNum} of ${total}  |  © 2026 Borobhairion. All rights reserved.`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+        };
+
+        // 1. COVER PAGE
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(22);
+        doc.setTextColor(26, 26, 78);
+        doc.text("RESEARCH PAPER ANALYSIS REPORT", pageWidth / 2, 80, { align: 'center' });
+        
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Generated on: ${new Date().toLocaleDateString()}`, pageWidth / 2, 95, { align: 'center' });
+        
+        doc.setDrawColor(224, 224, 236);
+        doc.line(margin, 105, pageWidth - margin, 105);
+        
+        doc.text("Prepared using Borobhairion Research Tool", pageWidth / 2, 115, { align: 'center' });
+        
+        doc.setFontSize(8);
+        doc.text("© 2026 Borobhairion. All rights reserved.", pageWidth / 2, pageHeight - 20, { align: 'center' });
+
+        // 2. CONTENT PAGES
+        const sections = document.querySelectorAll('.section-card');
+        let y = margin;
+        let isFirstContentPage = true;
+
+        sections.forEach((section) => {
+            const title = section.querySelector('h2').innerText;
+            const groups = section.querySelectorAll('.question-group');
+            let sectionData = [];
+
+            groups.forEach(g => {
+                const label = g.querySelector('label').innerText;
+                let val = '';
+                const textarea = g.querySelector('textarea');
+                const select = g.querySelector('select');
+                const input = g.querySelector('input');
+                const radios = g.querySelectorAll('input[type="radio"]:checked');
+                const checks = g.querySelectorAll('input[type="checkbox"]:checked');
+
+                if (textarea && textarea.value.trim()) val = textarea.value.trim();
+                else if (select && select.value) val = select.value;
+                else if (input && input.type !== 'radio' && input.type !== 'checkbox' && input.value.trim()) val = input.value.trim();
+                else if (radios.length) val = radios[0].value;
+                else if (checks.length) val = Array.from(checks).map(c => c.value).join(', ');
+
+                if (val) sectionData.push({ q: label, a: val });
+            });
+
+            if (sectionData.length > 0) {
+                if (isFirstContentPage) {
+                    doc.addPage();
+                    isFirstContentPage = false;
+                    y = 20;
+                }
+
+                // Check for page break for section header
+                if (y > pageHeight - 40) {
+                    doc.addPage();
+                    y = 20;
+                }
+
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(14);
+                doc.setTextColor(26, 26, 78);
+                doc.text(title, margin, y);
+                y += 2;
+                doc.setDrawColor(224, 224, 236);
+                doc.line(margin, y, margin + 40, y);
+                y += 10;
+
+                sectionData.forEach(item => {
+                    doc.setFontSize(11);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(50, 50, 50);
+                    const qLines = doc.splitTextToSize(item.q, pageWidth - margin * 2);
+                    
+                    if (y + (qLines.length * 6) > pageHeight - 30) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    doc.text(qLines, margin, y);
+                    y += (qLines.length * 6);
+
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(80, 80, 80);
+                    const aLines = doc.splitTextToSize(item.a, pageWidth - margin * 2.5);
+                    
+                    if (y + (aLines.length * 5) > pageHeight - 30) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    doc.text(aLines, margin + 8, y);
+                    y += (aLines.length * 5) + 8;
+                });
+                y += 10;
+            }
+        });
+
+        // 3. FINAL PASS: Add footers to all pages
+        const totalPages = doc.internal.getNumberOfPages();
+        for (let i = 2; i <= totalPages; i++) {
+            doc.setPage(i);
+            addFooter(doc, i, totalPages);
+        }
+
+        doc.save(`research-analysis-${year}.pdf`);
+    });
+</script>
+
+</body>
+</html>
