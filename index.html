@@ -2518,7 +2518,6 @@
       </footer>
     </div>
 
-
     <!-- Feedback modal and button -->
     <style id="feedback-styles">
       /* Floating feedback button */
@@ -2532,7 +2531,7 @@
         background: var(--accent);
         color: white;
         border: none;
-        box-shadow: 0 10px 25px rgba(99,102,241,0.3);
+        box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
         cursor: pointer;
         font-weight: 600;
       }
@@ -2542,7 +2541,7 @@
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.5);
+        background: rgba(0, 0, 0, 0.5);
         z-index: 10000;
         align-items: center;
         justify-content: center;
@@ -2556,7 +2555,7 @@
         border: 1px solid var(--border);
         border-radius: 12px;
         padding: 1.25rem;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
       }
 
       #feedback-modal h3 {
@@ -2570,7 +2569,9 @@
         gap: 0.75rem;
       }
 
-      #feedback-form input, #feedback-form textarea, #feedback-form select {
+      #feedback-form input,
+      #feedback-form textarea,
+      #feedback-form select {
         width: 100%;
         padding: 0.75rem;
         border: 1px solid var(--border);
@@ -2579,23 +2580,52 @@
         color: var(--text);
       }
 
-      #feedback-form textarea { min-height: 120px; resize: vertical; }
+      #feedback-form textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
 
-      .feedback-actions { display:flex; gap:0.5rem; justify-content:flex-end; margin-top:0.75rem }
+      .feedback-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+        margin-top: 0.75rem;
+      }
 
-      .feedback-msg { font-size: 0.95rem; margin-top:0.5rem }
+      .feedback-msg {
+        font-size: 0.95rem;
+        margin-top: 0.5rem;
+      }
 
-      @media (max-width:600px) {
-        #feedback-form .row { grid-template-columns: 1fr; }
-        #feedback-btn { right: 12px; bottom: 16px; }
+      @media (max-width: 600px) {
+        #feedback-form .row {
+          grid-template-columns: 1fr;
+        }
+        #feedback-btn {
+          right: 12px;
+          bottom: 16px;
+        }
       }
     </style>
 
-    <button id="feedback-btn" aria-haspopup="dialog" aria-controls="feedback-modal">Feedback</button>
+    <button
+      id="feedback-btn"
+      aria-haspopup="dialog"
+      aria-controls="feedback-modal"
+    >
+      Feedback
+    </button>
 
     <div id="feedback-modal" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="modal-card" role="document">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+          "
+        >
           <h3>Send feedback</h3>
           <button id="feedback-close" class="icon-btn" title="Close">✕</button>
         </div>
@@ -2603,7 +2633,12 @@
           <div class="row">
             <div>
               <label>Name (optional)</label>
-              <input type="text" name="name" maxlength="255" placeholder="Your name" />
+              <input
+                type="text"
+                name="name"
+                maxlength="255"
+                placeholder="Your name"
+              />
             </div>
             <div>
               <label>Rating</label>
@@ -2618,34 +2653,55 @@
             </div>
           </div>
 
-          <div style="margin-top:0.75rem;">
+          <div style="margin-top: 0.75rem">
             <label>Email (optional)</label>
-            <input type="email" name="email" maxlength="255" placeholder="you@example.com" />
+            <input
+              type="email"
+              name="email"
+              maxlength="255"
+              placeholder="you@example.com"
+            />
           </div>
 
-          <div style="margin-top:0.75rem;">
+          <div style="margin-top: 0.75rem">
             <label>Message (required)</label>
-            <textarea name="message" maxlength="2000" required placeholder="Describe your feedback"></textarea>
+            <textarea
+              name="message"
+              maxlength="2000"
+              required
+              placeholder="Describe your feedback"
+            ></textarea>
           </div>
 
           <div class="feedback-actions">
-            <button type="button" id="feedback-cancel" class="icon-btn">Cancel</button>
-            <button type="submit" id="feedback-submit" class="cta-button">Send</button>
+            <button type="button" id="feedback-cancel" class="icon-btn">
+              Cancel
+            </button>
+            <button type="submit" id="feedback-submit" class="cta-button">
+              Send
+            </button>
           </div>
 
-          <div class="feedback-msg" id="feedback-status" aria-live="polite"></div>
-
-          </form>
+          <div
+            class="feedback-msg"
+            id="feedback-status"
+            aria-live="polite"
+          ></div>
+        </form>
       </div>
     </div>
 
+    <!-- Optional env file -->
+    <script src="env.js"></script>
+
     <!-- Supabase UMD (browser) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-    <!-- Optional env file (create env.js at site root containing window.__SUPABASE_URL and window.__SUPABASE_ANON_KEY) -->
-    <script src="env.js"></script>
-    <script src="supabaseClient.js"></script>
-    <script src="feedback.js"></script>
 
+    <!-- Supabase initialization -->
+    <script src="supabaseClient.js"></script>
+
+    <!-- Feedback logic -->
+    <script src="feedback.js"></script>
     <script>
       // Theme Management
       const themeToggle = document.getElementById("theme-toggle");
@@ -2672,7 +2728,7 @@
       function saveFormData() {
         const formData = {};
         const inputs = document.querySelectorAll(
-          "#form-container textarea, #form-container input[type='text'], #form-container select, #form-container input[type='radio']:checked, #form-container input[type='checkbox']:checked"
+          "#form-container textarea, #form-container input[type='text'], #form-container select, #form-container input[type='radio']:checked, #form-container input[type='checkbox']:checked",
         );
         inputs.forEach((input) => {
           formData[input.name] = input.value;
@@ -2687,13 +2743,10 @@
         const formData = JSON.parse(saved);
         Object.keys(formData).forEach((name) => {
           const input = document.querySelector(
-            `#form-container [name="${name}"]`
+            `#form-container [name="${name}"]`,
           );
           if (input) {
-            if (
-              input.type === "radio" ||
-              input.type === "checkbox"
-            ) {
+            if (input.type === "radio" || input.type === "checkbox") {
               input.checked = input.value === formData[name];
             } else {
               input.value = formData[name];
@@ -2704,12 +2757,12 @@
 
       // Check for saved form data on page load
       window.addEventListener("load", () => {
-              const saved = localStorage.getItem(STORAGE_KEY);
-              if (saved && JSON.stringify(JSON.parse(saved)).length > 2) {
-                // Saved draft exists — stay on hero. Restore when user clicks "Let's Create".
-                // Optionally, show a notice. No auto-navigation to the form.
-              }
-            });
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved && JSON.stringify(JSON.parse(saved)).length > 2) {
+          // Saved draft exists — stay on hero. Restore when user clicks "Let's Create".
+          // Optionally, show a notice. No auto-navigation to the form.
+        }
+      });
 
       // Warn before leaving page if form has data
       window.addEventListener("beforeunload", (e) => {
@@ -2732,14 +2785,14 @@
           hero.style.display = "none";
           form.style.display = "block";
           setTimeout(() => {
-                  // Restore any saved draft when showing the form
-                  restoreFormData();
-                  updateGlobalProgress();
-                  form.style.opacity = "1";
-                  initReveal();
-                }, 50);
-              }, 800);
-            }
+            // Restore any saved draft when showing the form
+            restoreFormData();
+            updateGlobalProgress();
+            form.style.opacity = "1";
+            initReveal();
+          }, 50);
+        }, 800);
+      }
 
       function goToHero() {
         const hero = document.getElementById("hero-view");
