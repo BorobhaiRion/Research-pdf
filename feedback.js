@@ -64,7 +64,7 @@ function init() {
     }
 
     if (!window.supabaseConfigured || !window.supabaseClient) {
-      statusEl.textContent = 'Feedback backend not configured. Please contact the site owner.';
+      statusEl.textContent = 'Missing Supabase config. Create env.js with window.__SUPABASE_URL and window.__SUPABASE_ANON_KEY, then reload.';
       statusEl.style.color = '#e11d48';
       return;
     }
@@ -80,7 +80,9 @@ function init() {
       var data = res.data, error = res.error;
       if (error) {
         console.error('Supabase returned error:', error);
-        statusEl.textContent = 'An error occurred when sending feedback.';
+        var msg = (error && error.message) ? error.message : JSON.stringify(error);
+        var short = msg.length > 200 ? msg.slice(0, 200) + '...' : msg;
+        statusEl.textContent = 'Error sending feedback: ' + short + ' (check RLS and anon INSERT)';
         statusEl.style.color = '#e11d48';
       } else {
         statusEl.textContent = 'Thanks! Your feedback was sent.';
@@ -90,7 +92,8 @@ function init() {
       }
     }).catch(function (err) {
       console.error('Feedback submission error', err);
-      statusEl.textContent = 'An error occurred while sending feedback. Please try again later.';
+      var msg = (err && err.message) ? err.message : String(err);
+      statusEl.textContent = 'Error sending feedback: ' + msg;
       statusEl.style.color = '#e11d48';
     }).finally(function () {
       isSubmitting = false;
