@@ -289,6 +289,59 @@
               gap: 0.5rem;
             }
 
+            /* EZ Mode Toggle */
+            .toggle-switch {
+              display: flex;
+              align-items: center;
+              gap: 0.75rem;
+              padding: 0 1rem;
+              background: var(--surface);
+              border: 1px solid var(--border);
+              border-radius: 10px;
+            }
+
+            .toggle-switch-label {
+              font-size: 0.85rem;
+              font-weight: 600;
+              color: var(--text-muted);
+              white-space: nowrap;
+            }
+
+            .toggle-switch input {
+              display: none;
+            }
+
+            .toggle-switch-slider {
+              position: relative;
+              width: 50px;
+              height: 26px;
+              background-color: var(--border);
+              border-radius: 13px;
+              cursor: pointer;
+              transition: background-color 0.3s ease;
+            }
+
+            .toggle-switch-slider::after {
+              content: "";
+              position: absolute;
+              width: 22px;
+              height: 22px;
+              background-color: white;
+              border-radius: 50%;
+              top: 2px;
+              left: 2px;
+              transition: left 0.3s ease;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .toggle-switch input:checked + .toggle-switch-slider {
+              background-color: var(--accent);
+            }
+
+            .toggle-switch input:checked + .toggle-switch-slider::after {
+              left: 26px;
+            }
+
             /* Form Sections */
             main {
               max-width: 850px;
@@ -631,6 +684,11 @@
           <div id="progress-bar"></div>
         </div>
         <div class="header-actions">
+          <label class="toggle-switch">
+            <span class="toggle-switch-label">EZ Mode</span>
+            <input type="checkbox" id="ez-mode-toggle" />
+            <div class="toggle-switch-slider"></div>
+          </label>
           <a
             href="https://scholar.google.com"
             target="_blank"
@@ -2745,6 +2803,216 @@
         setTheme(currentTheme === "dark" ? "light" : "dark");
       });
 
+      // EZ Mode - Research Paper Reading Guide
+      const EZ_MODE_KEY = "ezMode";
+      const ezModeToggle = document.getElementById("ez-mode-toggle");
+
+      function saveEZModeState(enabled) {
+        localStorage.setItem(EZ_MODE_KEY, enabled ? "true" : "false");
+      }
+
+      function getEZModeState() {
+        return localStorage.getItem(EZ_MODE_KEY) === "true";
+      }
+
+      function toggleEZMode(enabled) {
+        const allSections = document.querySelectorAll(".section-card");
+        
+        // Clear all form data when switching modes
+        localStorage.removeItem(STORAGE_KEY);
+        
+        // EZ mode question mapping - one question per section
+        const ezQuestions = {
+          1: {
+            title: "Section 1 — Abstract",
+            question: "Is this relevant?"
+          },
+          2: {
+            title: "Section 2 — Introduction",
+            question: "What problem are they solving?"
+          },
+          3: {
+            title: "Section 3 — Related Work",
+            question: "Gold mine of more papers to read"
+          },
+          4: {
+            title: "Section 4 — Dataset Section",
+            question: "What data did they use? Can you use it too?"
+          },
+          5: {
+            title: "Section 5 — Results Table",
+            question: "What accuracy did they achieve? This becomes your baseline."
+          },
+          6: {
+            title: "Section 6 — Conclusion",
+            question: "What do they suggest for future work? → That's your research gap!"
+          }
+        };
+
+        // Normal mode titles
+        const normalTitles = {
+          1: "Section 1 — Paper Identification",
+          2: "Section 2 — Research Area Classification",
+          3: "Section 3 — Problem Understanding",
+          4: "Section 4 — Research Gap",
+          5: "Section 5 — Novelty / Originality",
+          6: "Section 6 — Methodology"
+        };
+
+        if (enabled) {
+          // Show only first 6 sections with single EZ questions
+          allSections.forEach((section, idx) => {
+            const sectionNum = idx + 1;
+            
+            if (sectionNum <= 6) {
+              section.style.display = "block";
+              section.style.opacity = "1";
+              section.style.pointerEvents = "auto";
+              section.setAttribute("data-ez-mode", "true");
+              
+              // Update section title
+              const titleWrapper = section.querySelector(".section-title-wrapper h2");
+              if (titleWrapper) {
+                titleWrapper.textContent = ezQuestions[sectionNum].title;
+              }
+              
+              // Hide all question groups except first
+              const questionGroups = section.querySelectorAll(".question-group");
+              questionGroups.forEach((group, groupIdx) => {
+                if (groupIdx === 0) {
+                  // Keep first question group visible, update it
+                  const label = group.querySelector("label");
+                  if (label) {
+                    label.textContent = ezQuestions[sectionNum].question;
+                  }
+                  // Hide any nested options/textareas and show simple textarea
+                  const optionsGrid = group.querySelector(".options-grid");
+                  const select = group.querySelector("select");
+                  const inputs = group.querySelectorAll("input[type='radio'], input[type='checkbox']");
+                  const textareaWrapper = group.querySelector(".textarea-wrapper");
+                  
+                  if (optionsGrid) optionsGrid.style.display = "none";
+                  if (select) select.style.display = "none";
+                  inputs.forEach(input => input.parentElement.style.display = "none");
+                  
+                  // Show textarea if it exists, otherwise create one
+                  if (textareaWrapper) {
+                    textareaWrapper.style.display = "block";
+                    // Clear existing textarea content
+                    const textarea = textareaWrapper.querySelector("textarea");
+                    if (textarea) {
+                      textarea.value = "";
+                    }
+                  } else if (!group.querySelector("textarea")) {
+                    const textarea = document.createElement("textarea");
+                    textarea.name = `ez_s${sectionNum}_q1`;
+                    textarea.style.width = "100%";
+                    textarea.style.minHeight = "120px";
+                    textarea.style.padding = "0.75rem";
+                    textarea.style.border = "1px solid var(--border)";
+                    textarea.style.borderRadius = "8px";
+                    textarea.style.fontFamily = "var(--font-body)";
+                    textarea.style.fontSize = "1rem";
+                    textarea.style.backgroundColor = "var(--bg)";
+                    textarea.style.color = "var(--text)";
+                    group.appendChild(textarea);
+                  }
+                  group.style.display = "block";
+                } else {
+                  // Hide all other question groups
+                  group.style.display = "none";
+                }
+              });
+            } else {
+              section.style.display = "none";
+            }
+          });
+        } else {
+          // Restore normal mode - show all sections and restore original content
+          allSections.forEach((section, idx) => {
+            const sectionNum = idx + 1;
+            section.style.display = "block";
+            section.style.opacity = "1";
+            section.style.pointerEvents = "auto";
+            section.removeAttribute("data-ez-mode");
+            
+            // Restore original title if in first 6 sections
+            if (sectionNum <= 6) {
+              const titleWrapper = section.querySelector(".section-title-wrapper h2");
+              if (titleWrapper) {
+                titleWrapper.textContent = normalTitles[sectionNum];
+              }
+            }
+            
+            // Show all question groups again and clear their values
+            const questionGroups = section.querySelectorAll(".question-group");
+            questionGroups.forEach((group) => {
+              group.style.display = "block";
+              
+              // Clear all input values
+              const allInputs = group.querySelectorAll("textarea, input[type='text'], input[type='number']");
+              allInputs.forEach(input => {
+                input.value = "";
+              });
+              
+              // Uncheck all radio and checkboxes
+              const radios = group.querySelectorAll("input[type='radio'], input[type='checkbox']");
+              radios.forEach(radio => {
+                radio.checked = false;
+              });
+              
+              // Reset selects
+              const selects = group.querySelectorAll("select");
+              selects.forEach(select => {
+                select.value = "";
+              });
+              
+              // Restore visibility of options/inputs
+              const optionsGrid = group.querySelector(".options-grid");
+              const select = group.querySelector("select");
+              const inputs = group.querySelectorAll("input[type='radio'], input[type='checkbox']");
+              const labels = group.querySelectorAll(".option-label");
+              const textareaWrapper = group.querySelector(".textarea-wrapper");
+              
+              if (optionsGrid) optionsGrid.style.display = "grid";
+              if (select) select.style.display = "block";
+              inputs.forEach(input => {
+                if (input.parentElement.classList.contains("option-label")) {
+                  input.parentElement.style.display = "flex";
+                }
+              });
+              labels.forEach(label => label.style.display = "flex");
+              if (textareaWrapper) textareaWrapper.style.display = "block";
+            });
+          });
+        }
+        
+        saveEZModeState(enabled);
+      }
+
+      // Load EZ Mode state on startup
+      if (getEZModeState()) {
+        ezModeToggle.checked = true;
+      }
+
+      // Listen for EZ mode toggle
+      ezModeToggle.addEventListener("change", () => {
+        if (ezModeToggle.checked) {
+          // Clear all previous data when enabling EZ mode
+          localStorage.removeItem(STORAGE_KEY);
+          // Show form if on hero page
+          const heroView = document.getElementById("hero-view");
+          if (heroView && heroView.style.display !== "none") {
+            startCreating();
+          }
+        }
+        toggleEZMode(ezModeToggle.checked);
+        // Update progress bar after toggling mode
+        setTimeout(() => {
+          updateGlobalProgress();
+        }, 100);
+      });
+
       // Form Data Persistence
       const STORAGE_KEY = "formData";
 
@@ -2808,11 +3076,17 @@
           hero.style.display = "none";
           form.style.display = "block";
           setTimeout(() => {
-            // Restore any saved draft when showing the form
-            restoreFormData();
+            // Only restore form data if NOT in EZ mode
+            if (!getEZModeState()) {
+              restoreFormData();
+            }
             updateGlobalProgress();
             form.style.opacity = "1";
             initReveal();
+            // Apply EZ mode if it was enabled
+            if (getEZModeState()) {
+              toggleEZMode(true);
+            }
           }, 50);
         }, 800);
       }
@@ -2887,7 +3161,12 @@
       });
 
       // Also save on change event for better coverage
-      formContainer.addEventListener("change", () => {
+      formContainer.addEventListener("change", (e) => {
+        const section = e.target.closest(".section-card");
+        if (section) {
+          updateSectionStatus(section);
+        }
+        updateGlobalProgress();
         saveFormData();
       });
 
@@ -2906,9 +3185,14 @@
       });
 
       function updateSectionStatus(section) {
+        const isEZMode = getEZModeState();
         const inputs = section.querySelectorAll("input, textarea, select");
         let isFilled = false;
+        
         inputs.forEach((input) => {
+          // Skip hidden elements
+          if (input.offsetParent === null) return;
+          
           if (
             (input.type === "radio" || input.type === "checkbox") &&
             input.checked
@@ -2928,7 +3212,17 @@
       }
 
       function updateGlobalProgress() {
-        const sections = document.querySelectorAll(".section-card");
+        const isEZMode = getEZModeState();
+        let sections;
+        
+        if (isEZMode) {
+          // In EZ mode, only count first 6 visible sections
+          sections = Array.from(document.querySelectorAll(".section-card")).slice(0, 6);
+        } else {
+          // In normal mode, count all sections
+          sections = document.querySelectorAll(".section-card");
+        }
+        
         let filledCount = 0;
         sections.forEach((s) => {
           if (s.querySelector(".completion-mark").classList.contains("visible"))
