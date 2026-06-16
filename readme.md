@@ -1,5 +1,5 @@
 # Borobhairion Research — Research Paper Analysis Tool
-
+#Help me integrate AI to automate the process
 A fully client-side, single-file web application for structured academic paper analysis. Fill in what you know, skip what you don't, and export a clean professional PDF report — all without an account, server, or internet connection after the page loads.
 
 ---
