@@ -1,6 +1,19 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <title>ResearchPDF - Create Research PDFs Easily</title>
+
+    <meta
+      name="description"
+      content="ResearchPDF is a simple tool to create, edit and manage research PDF documents online."
+    />
+
+    <meta
+      name="keywords"
+      content="ResearchPDF, research pdf, pdf generator, document creator"
+    />
+
+    <meta name="robots" content="index, follow" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Borobhairion Research Paper Analysis</title>
@@ -2817,36 +2830,38 @@
 
       function toggleEZMode(enabled) {
         const allSections = document.querySelectorAll(".section-card");
-        
+
         // Clear all form data when switching modes
         localStorage.removeItem(STORAGE_KEY);
-        
+
         // EZ mode question mapping - one question per section
         const ezQuestions = {
           1: {
             title: "Section 1 — Abstract",
-            question: "Is this relevant?"
+            question: "Is this relevant?",
           },
           2: {
             title: "Section 2 — Introduction",
-            question: "What problem are they solving?"
+            question: "What problem are they solving?",
           },
           3: {
             title: "Section 3 — Related Work",
-            question: "Gold mine of more papers to read"
+            question: "Gold mine of more papers to read",
           },
           4: {
             title: "Section 4 — Dataset Section",
-            question: "What data did they use? Can you use it too?"
+            question: "What data did they use? Can you use it too?",
           },
           5: {
             title: "Section 5 — Results Table",
-            question: "What accuracy did they achieve? This becomes your baseline."
+            question:
+              "What accuracy did they achieve? This becomes your baseline.",
           },
           6: {
             title: "Section 6 — Conclusion",
-            question: "What do they suggest for future work? → That's your research gap!"
-          }
+            question:
+              "What do they suggest for future work? → That's your research gap!",
+          },
         };
 
         // Normal mode titles
@@ -2856,32 +2871,35 @@
           3: "Section 3 — Problem Understanding",
           4: "Section 4 — Research Gap",
           5: "Section 5 — Novelty / Originality",
-          6: "Section 6 — Methodology"
+          6: "Section 6 — Methodology",
         };
 
         if (enabled) {
           // Show only first 6 sections with single EZ questions
           allSections.forEach((section, idx) => {
             const sectionNum = idx + 1;
-            
+
             if (sectionNum <= 6) {
               section.style.display = "block";
               section.style.opacity = "1";
               section.style.pointerEvents = "auto";
               section.setAttribute("data-ez-mode", "true");
-              
+
               // Reset completion mark
               const mark = section.querySelector(".completion-mark");
               if (mark) mark.classList.remove("visible");
-              
+
               // Update section title
-              const titleWrapper = section.querySelector(".section-title-wrapper h2");
+              const titleWrapper = section.querySelector(
+                ".section-title-wrapper h2",
+              );
               if (titleWrapper) {
                 titleWrapper.textContent = ezQuestions[sectionNum].title;
               }
-              
+
               // Hide all question groups except first
-              const questionGroups = section.querySelectorAll(".question-group");
+              const questionGroups =
+                section.querySelectorAll(".question-group");
               questionGroups.forEach((group, groupIdx) => {
                 if (groupIdx === 0) {
                   // Keep first question group visible, update it
@@ -2892,13 +2910,18 @@
                   // Hide any nested options/textareas and show simple textarea
                   const optionsGrid = group.querySelector(".options-grid");
                   const select = group.querySelector("select");
-                  const inputs = group.querySelectorAll("input[type='radio'], input[type='checkbox']");
-                  const textareaWrapper = group.querySelector(".textarea-wrapper");
-                  
+                  const inputs = group.querySelectorAll(
+                    "input[type='radio'], input[type='checkbox']",
+                  );
+                  const textareaWrapper =
+                    group.querySelector(".textarea-wrapper");
+
                   if (optionsGrid) optionsGrid.style.display = "none";
                   if (select) select.style.display = "none";
-                  inputs.forEach(input => input.parentElement.style.display = "none");
-                  
+                  inputs.forEach(
+                    (input) => (input.parentElement.style.display = "none"),
+                  );
+
                   // Show textarea if it exists, otherwise create one
                   if (textareaWrapper) {
                     textareaWrapper.style.display = "block";
@@ -2939,62 +2962,70 @@
             section.style.opacity = "1";
             section.style.pointerEvents = "auto";
             section.removeAttribute("data-ez-mode");
-            
+
             // Reset completion mark
             const mark = section.querySelector(".completion-mark");
             if (mark) mark.classList.remove("visible");
-            
+
             // Restore original title if in first 6 sections
             if (sectionNum <= 6) {
-              const titleWrapper = section.querySelector(".section-title-wrapper h2");
+              const titleWrapper = section.querySelector(
+                ".section-title-wrapper h2",
+              );
               if (titleWrapper) {
                 titleWrapper.textContent = normalTitles[sectionNum];
               }
             }
-            
+
             // Show all question groups again and clear their values
             const questionGroups = section.querySelectorAll(".question-group");
             questionGroups.forEach((group) => {
               group.style.display = "block";
-              
+
               // Clear all input values
-              const allInputs = group.querySelectorAll("textarea, input[type='text'], input[type='number']");
-              allInputs.forEach(input => {
+              const allInputs = group.querySelectorAll(
+                "textarea, input[type='text'], input[type='number']",
+              );
+              allInputs.forEach((input) => {
                 input.value = "";
               });
-              
+
               // Uncheck all radio and checkboxes
-              const radios = group.querySelectorAll("input[type='radio'], input[type='checkbox']");
-              radios.forEach(radio => {
+              const radios = group.querySelectorAll(
+                "input[type='radio'], input[type='checkbox']",
+              );
+              radios.forEach((radio) => {
                 radio.checked = false;
               });
-              
+
               // Reset selects
               const selects = group.querySelectorAll("select");
-              selects.forEach(select => {
+              selects.forEach((select) => {
                 select.value = "";
               });
-              
+
               // Restore visibility of options/inputs
               const optionsGrid = group.querySelector(".options-grid");
               const select = group.querySelector("select");
-              const inputs = group.querySelectorAll("input[type='radio'], input[type='checkbox']");
+              const inputs = group.querySelectorAll(
+                "input[type='radio'], input[type='checkbox']",
+              );
               const labels = group.querySelectorAll(".option-label");
               const textareaWrapper = group.querySelector(".textarea-wrapper");
-              
+
               if (optionsGrid) optionsGrid.style.display = "grid";
               if (select) select.style.display = "block";
-              inputs.forEach(input => {
+              inputs.forEach((input) => {
                 if (input.parentElement.classList.contains("option-label")) {
                   input.parentElement.style.display = "flex";
                 }
               });
-              labels.forEach(label => label.style.display = "flex");
+              labels.forEach((label) => (label.style.display = "flex"));
               if (textareaWrapper) textareaWrapper.style.display = "block";
             });
           });
         }
-        
+
         saveEZModeState(enabled);
       }
 
@@ -3198,11 +3229,11 @@
         const isEZMode = getEZModeState();
         const inputs = section.querySelectorAll("input, textarea, select");
         let isFilled = false;
-        
+
         inputs.forEach((input) => {
           // Skip hidden elements
           if (input.offsetParent === null) return;
-          
+
           if (
             (input.type === "radio" || input.type === "checkbox") &&
             input.checked
@@ -3217,7 +3248,8 @@
         });
 
         const mark = section.querySelector(".completion-mark");
-        if (mark) { // Safety check - only update if mark exists
+        if (mark) {
+          // Safety check - only update if mark exists
           if (isFilled) mark.classList.add("visible");
           else mark.classList.remove("visible");
         }
@@ -3226,19 +3258,22 @@
       function updateGlobalProgress() {
         const isEZMode = getEZModeState();
         let sections;
-        
+
         if (isEZMode) {
           // In EZ mode, only count first 6 visible sections
-          sections = Array.from(document.querySelectorAll(".section-card")).slice(0, 6);
+          sections = Array.from(
+            document.querySelectorAll(".section-card"),
+          ).slice(0, 6);
         } else {
           // In normal mode, count all sections
           sections = document.querySelectorAll(".section-card");
         }
-        
+
         let filledCount = 0;
         sections.forEach((s) => {
           const mark = s.querySelector(".completion-mark");
-          if (mark && mark.classList.contains("visible")) { // Safety check for mark existence
+          if (mark && mark.classList.contains("visible")) {
+            // Safety check for mark existence
             filledCount++;
           }
         });
