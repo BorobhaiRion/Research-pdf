@@ -2870,6 +2870,10 @@
               section.style.pointerEvents = "auto";
               section.setAttribute("data-ez-mode", "true");
               
+              // Reset completion mark
+              const mark = section.querySelector(".completion-mark");
+              if (mark) mark.classList.remove("visible");
+              
               // Update section title
               const titleWrapper = section.querySelector(".section-title-wrapper h2");
               if (titleWrapper) {
@@ -2935,6 +2939,10 @@
             section.style.opacity = "1";
             section.style.pointerEvents = "auto";
             section.removeAttribute("data-ez-mode");
+            
+            // Reset completion mark
+            const mark = section.querySelector(".completion-mark");
+            if (mark) mark.classList.remove("visible");
             
             // Restore original title if in first 6 sections
             if (sectionNum <= 6) {
@@ -3174,7 +3182,9 @@
       formContainer.addEventListener("keydown", (e) => {
         if (e.target.tagName === "TEXTAREA") {
           const wrapper = e.target.closest(".textarea-wrapper");
+          if (!wrapper) return; // Safety check - skip if wrapper not found
           const indicator = wrapper.querySelector(".typing-indicator");
+          if (!indicator) return; // Safety check - skip if indicator not found
           indicator.classList.add("active");
 
           clearTimeout(e.target._typingTimer);
@@ -3207,8 +3217,10 @@
         });
 
         const mark = section.querySelector(".completion-mark");
-        if (isFilled) mark.classList.add("visible");
-        else mark.classList.remove("visible");
+        if (mark) { // Safety check - only update if mark exists
+          if (isFilled) mark.classList.add("visible");
+          else mark.classList.remove("visible");
+        }
       }
 
       function updateGlobalProgress() {
@@ -3225,17 +3237,19 @@
         
         let filledCount = 0;
         sections.forEach((s) => {
-          if (s.querySelector(".completion-mark").classList.contains("visible"))
+          const mark = s.querySelector(".completion-mark");
+          if (mark && mark.classList.contains("visible")) { // Safety check for mark existence
             filledCount++;
+          }
         });
         const percentage = (filledCount / sections.length) * 100;
         progressBar.style.width = percentage + "%";
       }
 
       // PDF Generation
-      document
-        .getElementById("generate-pdf")
-        .addEventListener("click", async () => {
+      const pdfButton = document.getElementById("generate-pdf");
+      if (pdfButton) {
+        pdfButton.addEventListener("click", async () => {
           const { jsPDF } = window.jspdf;
           const doc = new jsPDF();
           const pageWidth = doc.internal.pageSize.getWidth();
@@ -3397,6 +3411,7 @@
 
           doc.save(`research-analysis-${year}.pdf`);
         });
+      }
     </script>
   </body>
 </html>
